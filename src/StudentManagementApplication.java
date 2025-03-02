@@ -3,9 +3,7 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.InputMismatchException;
-import java.util.Scanner;
+import java.util.*;
 
 //StudentManagementApplication class
 public class StudentManagementApplication {
@@ -231,9 +229,13 @@ public class StudentManagementApplication {
         System.out.println();
         System.out.println("Student ID    : " + student.getId());       //display student details for a student object with class methods
         System.out.println("Name          : " + student.getName());
-        System.out.println("Module 1 marks: " + student.getModule1().getMarks());
-        System.out.println("Module 2 marks: " + student.getModule2().getMarks());
-        System.out.println("Module 3 marks: " + student.getModule3().getMarks());
+//        System.out.println("Module 1 marks: " + student.getModule1().getMarks());
+//        System.out.println("Module 2 marks: " + student.getModule2().getMarks());
+//        System.out.println("Module 3 marks: " + student.getModule3().getMarks());
+        for (int i = 0; i < MODULE_COUNT; i++) {
+            System.out.printf("Module %d marks: %.2f%n", i + 1,
+                    student.getModules()[i] == null ? 0.0 : student.getModules()[i].getMarks());
+        }
         System.out.println("Average mark  : " + student.getAverage());
         System.out.println("Grade         : " + student.getGrade());
         System.out.println();
@@ -464,10 +466,16 @@ public class StudentManagementApplication {
                     if (student.getId().equalsIgnoreCase(studentID)) {      //check for equality for student ID
                         if (student.isMarkAdded().equals("MarksAdded")) {   //check isMarksAdded
                             System.out.println();                           //if "MarksAdded" display initial marks
-                            System.out.printf("You are updating existing marks (Module1: %s)(Module2: %s)(Module3: %s)"
-                                    , student.getModule1().getMarks()
-                                    , student.getModule2().getMarks()
-                                    , student.getModule3().getMarks());
+                            Module[] modules = student.getModules();
+                            System.out.println("You are updating existing marks");
+                            for (int i = 0; i < modules.length; i++) {
+                                System.out.printf("Module %s: ", i+1);
+                                System.out.println(modules[i].getMarks());
+                            }
+//                            System.out.printf("You are updating existing marks (Module1: %s)(Module2: %s)(Module3: %s)"
+//                                    , student.getModule1().getMarks()
+//                                    , student.getModule2().getMarks()
+//                                    , student.getModule3().getMarks());
                             System.out.println();
                         }
                         for (String[] studentDetails : STUDENT_INFORMATION_ARRAY) {       //loop through STUDENTS_ARRAY
@@ -478,13 +486,18 @@ public class StudentManagementApplication {
                                 break;                                                     //break the loop
                             }
                         }
-                        double module1Marks = getModuleMarks("Enter mark for Module 1: ");      //call getModuleMarks() with messages
-                        double module2Marks = getModuleMarks("Enter mark for Module 2: ");
-                        double module3Marks = getModuleMarks("Enter mark for Module 3: ");
+                        List<Double> moduleMarks = new ArrayList<>();
+                        for (int i = 0; i < MODULE_COUNT; i++) {
+                            double moduleMark = getModuleMarks(String.format("Enter mark for Module %d: ", i + 1));
+                            student.getModules()[i].setMarks(moduleMark);
+                        }
+//                        double module1Marks = getModuleMarks("Enter mark for Module 1: ");      //call getModuleMarks() with messages
+//                        double module2Marks = getModuleMarks("Enter mark for Module 2: ");
+//                        double module3Marks = getModuleMarks("Enter mark for Module 3: ");
 
-                        student.getModule1().setMarks(module1Marks);        //set student marks with user input values
-                        student.getModule2().setMarks(module2Marks);
-                        student.getModule3().setMarks(module3Marks);
+//                        student.getModule1().setMarks(module1Marks);        //set student marks with user input values
+//                        student.getModule2().setMarks(module2Marks);
+//                        student.getModule3().setMarks(module3Marks);
                         student.addingMarks("MarksAdded");        //set isMarksAdded as "MarksAdded"
                         storeToFile();                                       //save data to file
                         System.out.println("Module marks updated successfully!");
@@ -548,9 +561,13 @@ public class StudentManagementApplication {
                         System.out.println();
                         System.out.println("Student ID    : " + student.getId());       //display student, module details for equal ID
                         System.out.println("Name          : " + student.getName());
-                        System.out.println("Module 1 marks: " + student.getModule1().getMarks());
-                        System.out.println("Module 2 marks: " + student.getModule2().getMarks());
-                        System.out.println("Module 3 marks: " + student.getModule3().getMarks());
+//                        System.out.println("Module 1 marks: " + student.getModule1().getMarks());
+//                        System.out.println("Module 2 marks: " + student.getModule2().getMarks());
+//                        System.out.println("Module 3 marks: " + student.getModule3().getMarks());
+                        for (int i = 0; i < MODULE_COUNT; i++) {
+                            double marks = (student.getModules()[i] == null) ? 0.0 : student.getModules()[i].getMarks();
+                            System.out.printf("Module %d marks: %.2f%n", i + 1, marks);
+                        }
                         System.out.println("Average mark  : " + student.getAverage());
                         System.out.println("Grade         : " + student.getGrade());
                         System.out.println();
@@ -578,9 +595,9 @@ public class StudentManagementApplication {
             if (student.getId().equals("empty")) {      //break the loop if student name equals to 'empty'
                 break;
             }
-            double mark1 = student.getModule1().getMarks();     //store marks derived from student objects
-            double mark2 = student.getModule2().getMarks();
-            double mark3 = student.getModule3().getMarks();
+            double mark1 = student.getModule1() == null ? 0 : student.getModule1().getMarks();     //store marks derived from student objects
+            double mark2 = student.getModule2() == null ? 0 : student.getModule2().getMarks();
+            double mark3 = student.getModule3() == null ? 0 : student.getModule3().getMarks();
             if (mark1 >= 40) {                                   //check mark ranges for modules
                 studentsWithMoreThan40ForModule1++;
             }
@@ -654,11 +671,18 @@ public class StudentManagementApplication {
     private static String getParts(Student object) {
         String id = object.getId();         //derive String parts from student objects
         String name = object.getName();
-        String module1Marks = String.valueOf(object.getModule1() == null ? 0 : object.getModule1().getMarks());
-        String module2Marks = String.valueOf(object.getModule2() == null ? 0 : object.getModule2().getMarks());
-        String module3Marks = String.valueOf(object.getModule3() == null ? 0 : object.getModule3().getMarks());
+//        String module1Marks = String.valueOf(object.getModule1() == null ? 0 : object.getModule1().getMarks());
+//        String module2Marks = String.valueOf(object.getModule2() == null ? 0 : object.getModule2().getMarks());
+//        String module3Marks = String.valueOf(object.getModule3() == null ? 0 : object.getModule3().getMarks());
+        StringBuilder moduleMarksString = new StringBuilder();
+        for (int i = 0; i < MODULE_COUNT; i++) {
+            double mark = object.getModules()[i] == null ? 0 : object.getModules()[i].getMarks();
+            moduleMarksString.append(String.valueOf(mark));
+            moduleMarksString.append(", ");
+        }
+
         String isMarksAdded = object.isMarkAdded();
-        return id + ", " + name + ", " + module1Marks + ", " + module2Marks + ", " + module3Marks + ", " + isMarksAdded;    //return formatted String
+        return id + ", " + name + ", " + moduleMarksString.toString()  + isMarksAdded;    //return formatted String
     }
 
     //Load student details from file to system

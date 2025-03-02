@@ -100,6 +100,10 @@ class Student {
         this.name = name;
     }
 
+    public Module[] getModules() {
+        return modules;
+    }
+
     public Module getModule1() {
         return modules[0];
     }
